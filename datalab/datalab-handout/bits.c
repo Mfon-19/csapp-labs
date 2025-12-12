@@ -24,6 +24,7 @@ You will provide your solution to the Data Lab by
 editing the collection of functions in this source file.
 
 INTEGER CODING RULES:
+
  
   Replace the "return" statement in each function with one
   or more lines of C code that implements the function. Your code 
@@ -165,7 +166,14 @@ int tmin(void) {
  *   Rating: 1
  */
 int isTmax(int x) {
-  return 2;
+  // tmax is the only number where tmax + 1
+  // equals tmin equals ~tmax. !(a ^ b) returns
+  // true if a and b are equal, however, -1 is 
+  // another number where x + 1 == ~x, so we eliminate
+  // it by !!(x + 1) which sets all numbers other than 0
+  // to false (0)
+
+  return !((x + 1) ^ ~x) & (!!(x + 1));
 }
 /* 
  * allOddBits - return 1 if all odd-numbered bits in word set to 1
@@ -176,7 +184,11 @@ int isTmax(int x) {
  *   Rating: 2
  */
 int allOddBits(int x) {
-  return 2;
+  // so we first build a mask with the patern we're looking for
+  // and then we check if x is equal to that mask. kinda easy lol
+  int mask = 0xAA | (0xAA << 8);
+  mask = mask | (mask << 16);
+  return !((x & mask) ^ mask);
 }
 /* 
  * negate - return -x 
@@ -186,7 +198,7 @@ int allOddBits(int x) {
  *   Rating: 2
  */
 int negate(int x) {
-  return 2;
+  return ~x + 1;
 }
 //3
 /* 
@@ -199,7 +211,22 @@ int negate(int x) {
  *   Rating: 3
  */
 int isAsciiDigit(int x) {
-  return 2;
+  // this solution confirms that the high nibble of x is 3,
+  // and that the low nibble is between 0 - 9. the high nibble
+  // check is simple. just isolate it by masking with 0xF0, and
+  // then checking if it equals 0x30. the low nibble check requires
+  // a bit more observation. with 4 bits, i can encode numbers 0 - 15,
+  // but i'm only considered with 0 - 9. i observed that for 0 - 7, 
+  // the most significant bit wasn't set, and for 8 and 9, their b2
+  // and b1 bits weren't set. this isn't true for numbers 10 - 15
+  // so checking the lower nibble involves confirming whether these
+  // conditions are true or false
+  int low = x & 0xF;
+  int b3 = (low >> 3) & 1;
+  int b2 = (low >> 2) & 1;
+  int b1 = (low >> 1) & 1;
+   
+  return !((x & 0xF0) ^ 0x30) & !(b3 & (b2 | b1));
 }
 /* 
  * conditional - same as x ? y : z 
@@ -209,7 +236,13 @@ int isAsciiDigit(int x) {
  *   Rating: 3
  */
 int conditional(int x, int y, int z) {
-  return 2;
+  // i need to preserve either y or z at the end. to preserve a variable
+  // i bitwise and it with 0xFFFFFFFF, and to eliminate it, i and with 
+  // 0x00000000. the mask is set to all ones when x != 0 and all zeroes otherwise  
+
+  int flag = !!x; 
+  int mask = ~flag + 1; 
+  return (mask & y) | (~mask & z);
 }
 /* 
  * isLessOrEqual - if x <= y  then return 1, else return 0 
@@ -219,7 +252,19 @@ int conditional(int x, int y, int z) {
  *   Rating: 3
  */
 int isLessOrEqual(int x, int y) {
-  return 2;
+  // so basically, the two ways i can guarantee that x <= y is either x 
+  // is negative (msb set) and y is non-negative(msb not set), or y - x 
+  // is non-negative. now i want a 'same' variable that is true only when 
+  // xmsb is set and ymsb is not. the simplest way to do this is to check 
+  // if they are the same or different. if they are different, then i want xmsb to be set.
+  
+  xmsb = (x >> 31) & 1;
+  ymsb = (y >> 31) & 1;
+  same = !(xmsb ^ ymsb);
+  sum = y + (~x + 1);
+  summsb = (sum >> 31) & 1;
+
+  return !same & !(xmsb ^ 0x1) | same & (!summsb);
 }
 //4
 /* 
@@ -280,7 +325,16 @@ int floatFloat2Int(unsigned uf) {
 }
 /* 
  * floatPower2 - Return bit-level equivalent of the expression 2.0^x
- *   (2.0 raised to the power x) for any 32-bit integer x.
+ * 271  * logicalNeg - implement the ! operator, using all of
+272  *              the legal operators except !
+273  *   Examples: logicalNeg(3) = 0, logicalNeg(0) = 1
+274  *   Legal ops: ~ & ^ | + << >>
+275  *   Max ops: 12
+276  *   Rating: 4
+277  */
+278 int logicalNeg(int x) {
+279   return 2;
+280 }  (2.0 raised to the power x) for any 32-bit integer x.
  *
  *   The unsigned value that is returned should have the identical bit
  *   representation as the single-precision floating-point number 2.0^x.
