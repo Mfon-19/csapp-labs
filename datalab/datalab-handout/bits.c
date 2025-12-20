@@ -276,7 +276,16 @@ int isLessOrEqual(int x, int y) {
  *   Rating: 4 
  */
 int logicalNeg(int x) {
-  return 2;
+  // once again this needs clever observations. if x is zero,
+  // then the msb of x and -x will be 0. if x is nonzero, then
+  // either the msb of x or -x will be 1 or maybe both. 
+
+  negx = ~x + 1;
+  prevmsb = (x >> 31) & 1;
+  nextmsb = (negx >> 31) & 1;
+  at_least_one_set = prevmsb | nextmsb;
+
+  return at_least_one_set ^ 0x1;
 }
 /* howManyBits - return the minimum number of bits required to represent x in
  *             two's complement
@@ -322,7 +331,21 @@ unsigned floatScale2(unsigned uf) {
  */
 int floatFloat2Int(unsigned uf) {
   return 2;
-}
+290 /* howManyBits - return the minimum number of bits required to represent x in
+291  *             two's complement
+292  *  Examples: howManyBits(12) = 5
+293  *            howManyBits(298) = 10
+294  *            howManyBits(-5) = 4
+295  *            howManyBits(0)  = 1
+296  *            howManyBits(-1) = 1
+297  *            howManyBits(0x80000000) = 32
+298  *  Legal ops: ! ~ & ^ | + << >>
+299  *  Max ops: 90
+300  *  Rating: 4
+301  */
+302 int howManyBits(int x) {
+303   return 0;
+304 }}
 /* 
  * floatPower2 - Return bit-level equivalent of the expression 2.0^x
  * 271  * logicalNeg - implement the ! operator, using all of
